@@ -24,7 +24,7 @@ begin
     $display("rA=%f", tempAngle);
     tempAngle = - tempx2 / 24 + tempx2 * tempAngle;
     $display("rA=%f", tempAngle);
-    tempAngle = tempx2 / 2 - tempx2 * tempAngle;
+    tempAngle = tempx2 / 2 + tempx2 * tempAngle;
     $display("rA=%f", tempAngle);
     tempAngle = 1 - tempAngle;
     $display("rA=%f", tempAngle);
@@ -34,4 +34,3 @@ cos = tempAngle;
 $display("cos=%f", cos);
 end
 endmodule
-
