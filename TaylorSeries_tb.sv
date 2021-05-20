@@ -26,7 +26,7 @@ real real_cos;
 
 parameter FXP_MUL = 1024.0;
 
-TaylorSeries TaylorSeries( clock, reset, start, ready_out, angle_in, cos_out);
+TaylorSeries TaylorSeries(clock, reset, start, ready_out, angle_in, cos_out);
 
 //Clock generator
 initial
