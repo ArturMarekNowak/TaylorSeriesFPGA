@@ -67,24 +67,24 @@ begin
             temp_x4 <= (const_x2 * divider[1]) >> FXP_SHIFT;
             temp_x6 <= (const_x2 * divider[0]) >> FXP_SHIFT;
             state <= S4;
-            $display("const_x2 = %d, tempx2 = %d, tempx4 = %d, tempx6 = %d, tempAngle = %d", const_x2, temp_x2, temp_x4, temp_x6, tempAngle);
+            //$display("const_x2 = %d, tempx2 = %d, tempx4 = %d, tempx6 = %d, tempAngle = %d", const_x2, temp_x2, temp_x4, temp_x6, tempAngle);
         end
         S4:begin
             temp_x6 <= (const_x2 * temp_x6) >> FXP_SHIFT;
             temp_x4 <= (const_x2 * temp_x4) >> FXP_SHIFT;
             state <= S5;
-            $display("const_x2 = %d, tempx2 = %d, tempx4 = %d, tempx6 = %d, tempAngle = %d", const_x2, temp_x2, temp_x4, temp_x6, tempAngle);
+            //$display("const_x2 = %d, tempx2 = %d, tempx4 = %d, tempx6 = %d, tempAngle = %d", const_x2, temp_x2, temp_x4, temp_x6, tempAngle);
         end
         S5:begin
             temp_x6 <= (const_x2 * temp_x6) >> FXP_SHIFT;
             state <= S6;
-            $display("const_x2 = %d, tempx2 = %d, tempx4 = %d, tempx6 = %d, tempAngle = %d", const_x2, temp_x2, temp_x4, temp_x6, tempAngle);
+            //$display("const_x2 = %d, tempx2 = %d, tempx4 = %d, tempx6 = %d, tempAngle = %d", const_x2, temp_x2, temp_x4, temp_x6, tempAngle);
         end
         S6:begin
             tempAngle  <= 1 * FXP_MUL -  temp_x2 + temp_x4 - temp_x6;  
             ready_out = 1;
             state <= S7;
-            $display("const_x2 = %d, tempx2 = %d, tempx4 = %d, tempx6 = %d, tempAngle = %d", const_x2, temp_x2, temp_x4, temp_x6, tempAngle);
+            //$display("const_x2 = %d, tempx2 = %d, tempx4 = %d, tempx6 = %d, tempAngle = %d", const_x2, temp_x2, temp_x4, temp_x6, tempAngle);
         end
         S7: begin
             if(start == 1'b0) state <= S7; else state <= S1;

@@ -24,9 +24,10 @@ wire ready_out;
 wire [23:0] cos_out;
 real real_cos;
 
-parameter FXP_MUL = 1024;
+parameter FXP_MUL = 1024.0;
 
 TaylorSeries TaylorSeries( clock, reset, start, ready_out, angle_in, cos_out);
+
 //Clock generator
 initial
  clock <= 1'b1;
@@ -37,20 +38,24 @@ always
 initial
 begin
     reset <= 1'b1;
-    #1000 reset <= 1'b0;
+    #10 reset <= 1'b0;
 end
+
 //Stimuli signals
 initial
 begin
-    angle_in <= 1.5 * 1024; //Modify value in fixed-point [2:10]
+    angle_in <= 0.0 * FXP_MUL; //Modify value in fixed-point [2:10]
     start <= 1'b0;
-    #2000 start <= 1'b1;
-    #5 start <= 1'b0;
+    #20 start <= 1'b1;
 end
 always @ (posedge ready_out)
 begin
-    #10 real_cos = cos_out;
-    real_cos = real_cos;
-    $display("Real values: cos=%f", real_cos / FXP_MUL);
+    #10 real_cos = cos_out /FXP_MUL;
+    $display("Real values: cos=%f", real_cos);
+    #100 angle_in <= angle_in + 0.1 * FXP_MUL; // Increment angle
+      
+    if (angle_in > 1.5 * FXP_MUL )
+      $stop; 
+
 end
 endmodule
