@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module TaylorSeries(clock, reset, start, ready_out, angle_in, cos_out);
+module TaylorSeries(clock, reset, start, ready_out, regAngle, tempAngle );
 
 //Fixed Point
 parameter integer W = 24; 
@@ -26,19 +26,19 @@ parameter FXP_SHIFT = 10;
 
 //Input, outputs
 input clock, reset, start;
-input [W-1:0] angle_in;
+input [W-1:0] regAngle;
 output reg ready_out;
-output reg [W-1:0] cos_out;
+output reg [W-1:0] tempAngle ;
 
 //Taylor coefficients
-reg signed [W-1:0] divider[0:3] = { 12'b010000000000, 12'b001000000000, 12'b000000101011, 12'b000000000001 };
+reg signed [W-1:0] divider[0:3] = { 12'b000000000001, 12'b000000101010, 12'b001000000000, 12'b000000000001 };
 
 //States
-parameter S1 = 4'h00, S2 = 4'h01, S3 = 4'h02, S4 = 4'h03, S5 = 4'h04, S6 = 4'h05, S7 = 4'h06;
+parameter S1 = 4'h00, S2 = 4'h01, S3 = 4'h02, S4 = 4'h03, S5 = 4'h04, S6 = 4'h05, S7 = 4'h06, S8 = 4'h07, S9 = 4'h08, S10 = 4'h09, S11 = 4'h0A;
 reg [2:0] state;
 
 //Temporary variables
-reg signed [W -1:0] temp_x2;
+reg signed [W -1:0] const_x2, temp_x2, temp_x4, temp_x6;
 
 always @ (posedge clock)
 begin
@@ -54,27 +54,37 @@ begin
             if(start == 1'b1) state <= S2; else state <= S1;
            end
         S2: begin
-            temp_x2 <= (angle_in * angle_in) / FXP_MUL;
-            cos_out <= 0;
+            const_x2 <= (regAngle * regAngle) / FXP_MUL;
+            tempAngle  <= 0;
+            temp_x2 <= 0;
+            temp_x4 <= 0;
+            temp_x6 <= 0;
             ready_out <= 0;
             state <= S3;
         end
         S3: begin
-            cos_out <= temp_x2 / 120;
+            temp_x2 <= (const_x2 * divider[2]) >> 10;
+            temp_x4 <= (const_x2 * divider[1]) >> 10;
+            temp_x6 <= (const_x2 * divider[0]) >> 10;
             state <= S4;
+            $display("const_x2 = %d, tempx2 = %d, tempx4 = %d, tempx6 = %d, tempAngle = %d", const_x2, temp_x2, temp_x4, temp_x6, tempAngle);
         end
         S4:begin
-            cos_out <= temp_x2 / 24 - cos_out; 
+            temp_x6 <= (const_x2 * temp_x6) >> 10;
+            temp_x4 <= (const_x2 * temp_x4) >> 10;
             state <= S5;
+            $display("const_x2 = %d, tempx2 = %d, tempx4 = %d, tempx6 = %d, tempAngle = %d", const_x2, temp_x2, temp_x4, temp_x6, tempAngle);
         end
         S5:begin
-            cos_out <= temp_x2 / 2 + cos_out; 
+            temp_x6 <= (const_x2 * temp_x6) >> 10;
             state <= S6;
+            $display("const_x2 = %d, tempx2 = %d, tempx4 = %d, tempx6 = %d, tempAngle = %d", const_x2, temp_x2, temp_x4, temp_x6, tempAngle);
         end
         S6:begin
-            cos_out <= 1 * FXP_MUL -  cos_out; 
+            tempAngle  <= 1 * FXP_MUL -  temp_x2 + temp_x4 - temp_x6;  
             ready_out = 1;
             state <= S7;
+            $display("const_x2 = %d, tempx2 = %d, tempx4 = %d, tempx6 = %d, tempAngle = %d", const_x2, temp_x2, temp_x4, temp_x6, tempAngle);
         end
         S7: begin
             if(start == 1'b0) state <= S7; else state <= S1;
@@ -84,4 +94,3 @@ begin
 end
 
 endmodule
-

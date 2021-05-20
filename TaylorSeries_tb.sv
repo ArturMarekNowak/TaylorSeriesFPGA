@@ -42,7 +42,7 @@ end
 //Stimuli signals
 initial
 begin
-    angle_in <= 0.3 * FXP_MUL; //Modify value in fixed-point [2:10]
+    angle_in <= 1.5 * 1024; //Modify value in fixed-point [2:10]
     start <= 1'b0;
     #2000 start <= 1'b1;
     #5 start <= 1'b0;
@@ -50,7 +50,7 @@ end
 always @ (posedge ready_out)
 begin
     #10 real_cos = cos_out;
-    real_cos = real_cos / FXP_MUL;
-    $display("Real values: cos=%f", real_cos);
+    real_cos = real_cos;
+    $display("Real values: cos=%f", real_cos / FXP_MUL);
 end
 endmodule
