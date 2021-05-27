@@ -42,7 +42,7 @@ reg signed [W-1:0] divider[0:3] = { 24'b000000000000000001011011,
                                     24'b000000001000000000000000 };
 */
 //States
-parameter S1 = 4'h00, S2 = 4'h01, S3 = 4'h02, S4 = 4'h03, S5 = 4'h04, S6 = 4'h05, S7 = 4'h06, S8 = 4'h07, S9 = 4'h08, S10 = 4'h09, S11 = 4'h0A;
+parameter S1 = 4'h00, S2 = 4'h01, S3 = 4'h02, S4 = 4'h03, S5 = 4'h04, S6 = 4'h05, S7 = 4'h06;
 reg [2:0] state;
 
 //Temporary variables

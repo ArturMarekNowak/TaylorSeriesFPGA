@@ -1,20 +1,16 @@
 module Taylor_beh();
-/**
-* Cordic algorithm
-*/
-real t_angle = 0.5; //Input parameter. The angle
 
-real cos = 1.0; //Initial vector x coordinate
-real sin = 0.0; //and y coordinate
+real t_angle = 0.5;
 
-real angle = 0.0; //A running angle
+real cos = 1.0;
+real sin = 0.0;
+
+real angle = 0.0;
 real regAngle = 0, tempAngle = 0, tempx2 = 0;
 parameter FXP_MUL = 1024;
 parameter FXP_SHIFT = 10;
 
-integer cnt = 0, d;
-
-initial //Execute only once
+initial
 
 begin
     regAngle = t_angle ;
