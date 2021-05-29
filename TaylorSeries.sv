@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Create Date: 27.05.2021 20:09
+// Create Date: 29.04.2021 18:38
 // Design Name: TaylorSeries.sv
 // Module Name: TaylorSeries
 // Project Name: System dedykowany realizaujący aproksymacje szeregu Taylor na platformie FPGA
@@ -11,7 +11,7 @@
 // Dependencies: None
 // 
 // Revision: 
-// Revision 0.03 - increased FXP
+// Revision 0.04 - error check in testbench
 // Additional Comments: none
 // 
 //////////////////////////////////////////////////////////////////////////////////
@@ -20,9 +20,9 @@
 module TaylorSeries(clock, reset, start, ready_out, regAngle, tempAngle );
 
 //Fixed Point
-parameter integer W = 24; 
-parameter FXP_MUL = 8388608;
-parameter FXP_SHIFT = 23;
+parameter integer W = 12; 
+parameter FXP_MUL = 1024;
+parameter FXP_SHIFT = 10;
 
 //Input, outputs
 input clock, reset, start;
@@ -31,18 +31,21 @@ output reg ready_out;
 output reg [W-1:0] tempAngle;
 
 //Taylor coefficients
+/*
 reg signed [W-1:0] divider[0:3] = { 24'b00000000010110110000011, 
                                     24'b00001010101010101010101, 
                                     24'b10000000000000000000000, 
                                     24'b00000000000000000000001 };
-/*
-reg signed [W-1:0] divider[0:3] = { 24'b000000000000000001011011, 
-                                    24'b000000000000101010101011, 
-                                    24'b000000001000000000000000, 
-                                    24'b000000001000000000000000 };
 */
+
+
+reg signed [W-1:0] divider[0:3] = { 12'b000000000001, 
+                                    12'b000000101010, 
+                                    12'b001000000000, 
+                                    12'b000000000001 };
+
 //States
-parameter S1 = 4'h00, S2 = 4'h01, S3 = 4'h02, S4 = 4'h03, S5 = 4'h04, S6 = 4'h05, S7 = 4'h06;
+parameter S1 = 4'h00, S2 = 4'h01, S3 = 4'h02, S4 = 4'h03, S5 = 4'h04, S6 = 4'h05, S7 = 4'h06, S8 = 4'h07, S9 = 4'h08, S10 = 4'h09, S11 = 4'h0A;
 reg [2:0] state;
 
 //Temporary variables
