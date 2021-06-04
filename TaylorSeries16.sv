@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Create Date: 03.06.2021 22:00
-// Design Name: TaylorSeries.sv
-// Module Name: TaylorSeries
+// Create Date: 04.06.2021 10:42
+// Design Name: TaylorSeries16.sv
+// Module Name: TaylorSeries16
 // Project Name: System dedykowany realizaujący aproksymacje szeregu Taylor na platformie FPGA
 // Target Devices: ZedBoard Zynq-7000
 // Tool Versions: Vivado 2018.3
@@ -11,38 +11,38 @@
 // Dependencies: None
 // 
 // Revision: 
-// Revision 0.05 - added 16bit FXP module
+// Revision 0.06 - cleaned version of the project 
 // Additional Comments: none
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module TaylorSeries(clock, reset, start, ready_out, regAngle, tempAngle );
+module TaylorSeries16(clock, reset, start, ready_out, angle_in, cos_out );
 
-//Fixed Point
+// Fixed Point representation variables
 parameter integer W = 18; 
 parameter FXP_MUL = 65536;
 parameter FXP_SHIFT = 16;
 
 //Input, outputs
 input clock, reset, start;
-input [W-1:0] regAngle;
+input [W-1:0] angle_in;
 output reg ready_out;
-output reg [W-1:0] tempAngle;
+output reg [W-1:0] cos_out;
 
-//Taylor coefficients
+// Taylor coefficients
 reg signed [W-1:0] divider[0:3] = { 18'b00000000000000010,
                                     18'b00000000001011011,
                                     18'b00000101010101011, 
                                     18'b01000000000000000
                                     };
 
-//States
+// States
 parameter S1 = 4'h00, S2 = 4'h01, S3 = 4'h02, S4 = 4'h03, S5 = 4'h04, S6 = 4'h05, S7 = 4'h06, S8 = 4'h07;
 reg [2:0] state;
 
-//Temporary variables
-reg signed [2*W:0] const_x2, temp_x2, temp_x4, temp_x6, temp_x8;
+// Temporary variables
+reg signed [2*(W-1):0] const_x2, temp_x2, temp_x4, temp_x6, temp_x8;
 
 always @ (posedge clock)
 begin
@@ -58,8 +58,8 @@ begin
             if(start == 1'b1) state <= S2; else state <= S1;
            end
         S2: begin
-            const_x2 <= (regAngle * regAngle) >> FXP_SHIFT;
-            tempAngle  <= 0;
+            const_x2 <= (angle_in * angle_in) >> FXP_SHIFT;
+            cos_out  <= 0;
             temp_x2 <= 0;
             temp_x4 <= 0;
             temp_x6 <= 0;
@@ -95,7 +95,7 @@ begin
             //$display("const_x2 = %d, tempx2 = %d, tempx4 = %d, tempx6 = %d, tempAngle = %d", const_x2, temp_x2, temp_x4, temp_x6, tempAngle);
         end 
         S7:begin
-            tempAngle  <= 1 * FXP_MUL -  temp_x2 + temp_x4 - temp_x6 + temp_x8;  
+            cos_out  <= 1 * FXP_MUL -  temp_x2 + temp_x4 - temp_x6 + temp_x8;  
             ready_out = 1;
             state <= S8;
             //$display("const_x2 = %d, tempx2 = %d, tempx4 = %d, tempx6 = %d, tempAngle = %d", const_x2, temp_x2, temp_x4, temp_x6, tempAngle);
